@@ -656,6 +656,7 @@ fun! s:MultiMatch(spflag, mode)
   else
     execute "let match_words =" b:match_words
   endif
+  let match_words = match_words . (strlen(match_words) ? "," : "") . default
   if (match_words != s:last_words) || (&mps != s:last_mps) ||
     \ exists("b:match_debug")
     let s:last_words = match_words
