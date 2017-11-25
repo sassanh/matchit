@@ -57,15 +57,16 @@ onoremap <silent> g% v:<C-U>call <SID>Match_wrapper('',0,'o') <CR>
 " Analogues of [{ and ]} using matching patterns:
 nnoremap <silent> [% :<C-U>call <SID>MultiMatch("bW", "n") <CR>
 nnoremap <silent> ]% :<C-U>call <SID>MultiMatch("W",  "n") <CR>
-vmap [% <Esc>[%m'gv``
-vmap ]% <Esc>]%m'gv``
-" vnoremap <silent> [% :<C-U>call <SID>MultiMatch("bW", "v") <CR>m'gv``
-" vnoremap <silent> ]% :<C-U>call <SID>MultiMatch("W",  "v") <CR>m'gv``
+" vnoremap <silent> [% <Esc>:<C-U>call <SID>MultiMatch("bW", "n") <CR>m'gv``
+" vnoremap <silent> ]% <Esc>:<C-U>call <SID>MultiMatch("W",  "n") <CR>m'gv``
+vnoremap <silent> [% :<C-U>call <SID>MultiMatch("bW", "v") <CR>m'gv``
+vnoremap <silent> ]% :<C-U>call <SID>MultiMatch("W",  "v") <CR>m'gv``
 onoremap <silent> [% v:<C-U>call <SID>MultiMatch("bW", "o") <CR>
 onoremap <silent> ]% v:<C-U>call <SID>MultiMatch("W",  "o") <CR>
 
 " text object:
 vmap a% <Esc>[%v]%
+onoremap <silent> a% :<c-u>normal [%v]%<cr>
 
 " Auto-complete mappings:  (not yet "ready for prime time")
 " TODO Read :help write-plugin for the "right" way to let the user
@@ -633,6 +634,8 @@ endfun
 " TODO This relies on the same patterns as % matching.  It might be a good
 " idea to give it its own matching patterns.
 fun! s:MultiMatch(spflag, mode)
+  let level = v:count1
+
   if !exists("b:match_words") || b:match_words == ""
     return ""
   end
@@ -717,7 +720,6 @@ fun! s:MultiMatch(spflag, mode)
     execute "if " . skip . "| let skip = '0' | endif"
   endif
   mark '
-  let level = v:count1
   while level
     if searchpair(openpat, '', closepat, a:spflag, skip) < 1
       call s:CleanUp(restore_options, a:mode, startline, startcol)
